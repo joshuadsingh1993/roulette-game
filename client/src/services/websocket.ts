@@ -1,4 +1,5 @@
-import { ref, onUnmounted } from "vue";
+import { ref, onUnmounted, shallowRef } from "vue";
+import { useGameStore } from "../stores/gameStore";
 
 export interface WebSocketData {
   color: "red" | "black";
@@ -12,14 +13,33 @@ export interface WebSocketMessage {
   data: WebSocketData;
 }
 
-export function useWebSocket(url: string = "ws://localhost:3000") {
-  const socket = ref<WebSocket | null>(null);
-  const isConnected = ref(false);
-  const lastMessage = ref<WebSocketMessage | null>(null);
-  const error = ref<Event | null>(null);
+// Create a singleton instance that can be shared across components
+const socket = shallowRef<WebSocket | null>(null);
+const isConnected = ref(false);
+const lastMessage = ref<WebSocketMessage | null>(null);
+const error = ref<Event | null>(null);
 
-  // Connect to the WebSocket server
+export function useWebSocket(url: string = "ws://localhost:3000") {
+  // Create the store reference at the composable level
+  const gameStore = useGameStore();
+
+  // Connect to the WebSocket server only if not already connected
   const connect = () => {
+    // Check if socket already exists and is connected or connecting
+    if (
+      socket.value &&
+      (socket.value.readyState === WebSocket.OPEN ||
+        socket.value.readyState === WebSocket.CONNECTING)
+    ) {
+      console.log("WebSocket already connected or connecting");
+      return;
+    }
+
+    // Close existing socket if in an invalid state
+    if (socket.value) {
+      socket.value.close();
+    }
+
     socket.value = new WebSocket(url);
 
     socket.value.onopen = () => {
@@ -31,6 +51,9 @@ export function useWebSocket(url: string = "ws://localhost:3000") {
       try {
         const data = JSON.parse(event.data);
         lastMessage.value = data;
+        // Use the store reference
+        gameStore.startSpin(5, data.number);
+
         console.log("Message received:", data);
       } catch (e) {
         lastMessage.value = {
@@ -54,7 +77,7 @@ export function useWebSocket(url: string = "ws://localhost:3000") {
 
   // Disconnect from the WebSocket server
   const disconnect = () => {
-    if (socket.value && isConnected.value) {
+    if (socket.value) {
       socket.value.close();
       isConnected.value = false;
     }
@@ -62,17 +85,23 @@ export function useWebSocket(url: string = "ws://localhost:3000") {
 
   // Send a message to the WebSocket server
   const send = (data: { type: "spin" }) => {
-    if (socket.value && isConnected.value) {
+    if (socket.value && socket.value.readyState === WebSocket.OPEN) {
       const message = typeof data === "string" ? data : JSON.stringify(data);
       socket.value.send(message);
     } else {
       console.error("Cannot send message: WebSocket is not connected");
+      // Optionally reconnect and then send
+      // connect();
+      // setTimeout(() => send(data), 500);
     }
   };
 
-  // Clean up on component unmount
+  // Clean up on component unmount - but be careful not to disconnect
+  // if other components are still using the websocket
   onUnmounted(() => {
-    disconnect();
+    // Only disconnect if this is the last component using the socket
+    // For a more robust solution, you may want to implement a reference counter
+    // disconnect();
   });
 
   return {

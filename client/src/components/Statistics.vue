@@ -18,7 +18,12 @@ const props = withDefaults(defineProps<Props>(), {
   <div class="flex flex-col gap-4">
     <div class="flex flex-col">
       <span class="text-xs uppercase tracking-wide">Balance</span>
-      <span class="font-bold text-xl">${{ props.balance }}</span>
+      <span class="font-bold text-xl">{{
+        new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+        }).format(props.balance)
+      }}</span>
     </div>
     <div class="flex flex-col">
       <span class="text-xs uppercase tracking-wide">History</span>

@@ -31,15 +31,29 @@ export const useGameStore = defineStore("game", {
   },
   actions: {
     startSpin(bet: number, currentNumber: number): void {
-      if (bet > this.balance || this.balance === 0) return;
+      if (
+        bet > this.balance ||
+        this.balance === 0 ||
+        this.gameStatus === "spinning"
+      )
+        return;
+
       this.gameStatus = "spinning";
       this.currentNumber = currentNumber;
-      this.balance -= bet;
+
+      this.balance = this.balance - bet;
       this.spinCount++;
+    },
+
+    setGameStatus(status: GameStatus): void {
+      this.gameStatus = status;
     },
 
     updateHistory(resultNumber: number): void {
       this.history.push(resultNumber);
+      if (this.history.length > 10) {
+        this.history.shift();
+      }
     },
   },
 });

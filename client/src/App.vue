@@ -1,13 +1,29 @@
 <script setup lang="ts">
+import { initCanvas } from "./services/pixiGame";
 import { onMounted } from "vue";
 import { useWebSocket } from "./services/websocket";
 import Statistics from "./components/Statistics.vue";
+import { useGameStore } from "./stores/gameStore";
+import { ref } from "vue";
+import { watch } from "vue";
 
-const { connect, send, isConnected } = useWebSocket();
+const gameStore = useGameStore();
+const { connect, send, error, isConnected } = useWebSocket();
+const pixiContainer = ref(null);
 
 onMounted(() => {
   connect();
 });
+
+watch(
+  pixiContainer,
+  (newValue) => {
+    if (newValue) {
+      initCanvas(newValue);
+    }
+  },
+  { immediate: true }
+);
 
 const sendMessage = () => {
   send({
@@ -19,18 +35,27 @@ const sendMessage = () => {
 <template>
   <main className="py-16 px-4 max-w-[1000px] mx-auto">
     <h1 className="text-4xl text-center mb-16">European Roulette</h1>
-    <div></div>
-    <div className="aspect-video border border-red-400 relative">
-      Canvas
-      <div class="absolute bottom-8 left-8">
-        <Statistics :history="[10, 12]" />
+    <h4 class="text-center" v-if="!isConnected && error">
+      Oh no! We can't connect you to our servers. Please try again later!
+    </h4>
+    <h4 class="text-center" v-if="!isConnected && error === null">
+      Connecting...
+    </h4>
+    <div v-else className="aspect-video relative w-full" ref="pixiContainer">
+      <div class="absolute z-10 bottom-8 left-8">
+        <Statistics
+          :record="gameStore.wins"
+          :spins="gameStore.spinCount"
+          :balance="gameStore.balance"
+          :history="gameStore.history"
+        />
       </div>
 
       <button
         @click="sendMessage"
-        :disabled="!isConnected"
+        :disabled="gameStore.gameStatus !== 'idle'"
         type="button"
-        class="p-2 bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br rounded-full cursor-pointer absolute bottom-8 right-8"
+        class="p-2 z-10 bg-gradient-to-r disabled:cursor-auto from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br rounded-full cursor-pointer absolute bottom-8 right-8 disabled:bg-none disabled:bg-gray-400"
       >
         <svg
           class="h-12 w-12"
