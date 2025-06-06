@@ -166,10 +166,3 @@ const getNumberAngle = (number: number) => {
   const degrees = (index * (360 / 37)) % 360;
   return (degrees * Math.PI) / 180;
 };
-
-const calculateBallLandingAngle = (
-  wheelRotation: number,
-  targetAngle: number
-) => {
-  console.log("test");
-};

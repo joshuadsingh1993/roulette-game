@@ -1,12 +1,4 @@
-import {
-  Assets,
-  Matrix,
-  Transform,
-  type Application,
-  type Renderer,
-  Sprite,
-  Container,
-} from "pixi.js";
+import { type Application, type Renderer, Sprite } from "pixi.js";
 
 export function fitSpritesToScreen(
   app: Application<Renderer>,
