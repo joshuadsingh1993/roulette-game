@@ -1,1 +1,1 @@
-{"root":["./src/main.ts","./src/vite-env.d.ts","./src/services/websocket.ts","./src/stores/gamestore.ts","./src/app.vue","./src/components/statistics.vue"],"version":"5.8.3"}
+{"root":["./src/main.ts","./src/vite-env.d.ts","./src/services/websocket.ts","./src/services/pixigame/constants.ts","./src/services/pixigame/helpers.ts","./src/services/pixigame/index.ts","./src/stores/gamestore.ts","./src/app.vue","./src/components/statistics.vue"],"version":"5.8.3"}
