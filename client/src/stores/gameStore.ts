@@ -2,6 +2,8 @@ import { defineStore } from "pinia";
 
 export type GameStatus = "idle" | "spinning" | "result";
 
+export const MAX_HISTORY_RECORD = 10;
+
 export interface GameState {
   gameStatus: GameStatus;
   currentNumber: number | null;
@@ -51,7 +53,7 @@ export const useGameStore = defineStore("game", {
 
     updateHistory(resultNumber: number): void {
       this.history.push(resultNumber);
-      if (this.history.length > 10) {
+      if (this.history.length > MAX_HISTORY_RECORD) {
         this.history.shift();
       }
     },

@@ -3,19 +3,13 @@ import BowOuter from "../../assets/images/bow_outer.png";
 import BowInner from "../../assets/images/bow_inner.png";
 import Wheel from "../../assets/images/wheel.png";
 import Ball from "../../assets/images/ball.png";
-import { fitSpritesToScreen } from "./helpers";
+import { fitSpritesToScreen, getNumberAngle } from "./helpers";
 import { useGameStore } from "../../stores/gameStore";
 import { watch } from "vue";
 import gsap from "gsap";
+import { DEFAULT_WHEEL_ROTATION_SPEED } from "./constants";
 
-const DEFAULT_ROTATION_SPEED = 0.01;
-
-const ROULETTE_NUMBERS = [
-  0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24,
-  16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26,
-];
-
-const wheelPostionData = { speed: DEFAULT_ROTATION_SPEED };
+const wheelPostionData = { speed: DEFAULT_WHEEL_ROTATION_SPEED };
 const ballPositionData = {
   angle: Math.PI * 1.5, // Bottom of elipse
   velocity: 0,
@@ -84,7 +78,7 @@ export const initCanvas = async (ref: HTMLElement) => {
     (newStatus) => {
       if (newStatus === "spinning") {
         gsap.to(wheelPostionData, {
-          speed: DEFAULT_ROTATION_SPEED * 10,
+          speed: DEFAULT_WHEEL_ROTATION_SPEED * 10,
           duration: 2,
           ease: "power3.out",
           onComplete: () => {
@@ -140,7 +134,7 @@ export const initCanvas = async (ref: HTMLElement) => {
         ballPositionData.y = 147;
 
         gsap.to(wheelPostionData, {
-          speed: DEFAULT_ROTATION_SPEED,
+          speed: DEFAULT_WHEEL_ROTATION_SPEED,
           duration: 1,
           ease: "power3.in",
         });
@@ -159,10 +153,4 @@ export const initCanvas = async (ref: HTMLElement) => {
     ballSprite.y =
       ballPivotCenterY + ballPositionData.y * Math.sin(-ballPositionData.angle);
   });
-};
-
-const getNumberAngle = (number: number) => {
-  const index = ROULETTE_NUMBERS.indexOf(number);
-  const degrees = (index * (360 / 37)) % 360;
-  return (degrees * Math.PI) / 180;
 };

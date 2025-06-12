@@ -1,4 +1,5 @@
 import { type Application, type Renderer, Sprite } from "pixi.js";
+import { ROULETTE_NUMBERS } from "./constants";
 
 export function fitSpritesToScreen(
   app: Application<Renderer>,
@@ -34,3 +35,12 @@ export function resizeSprites(app: Application<Renderer>, assets: Sprite[]) {
     asset.y = app.screen.height / 2;
   });
 }
+
+export const getNumberAngle = (number: number) => {
+  const index = ROULETTE_NUMBERS.findIndex(({ value }) => number === value);
+
+  if (!index) return 0;
+
+  const degrees = (index * (360 / 37)) % 360;
+  return (degrees * Math.PI) / 180;
+};
