@@ -85,13 +85,13 @@ export const initCanvas = async (ref: HTMLElement) => {
             ballSprite.alpha = 1;
 
             gsap.to(ballPositionData, {
-              velocity: 0.1,
+              velocity: DEFAULT_WHEEL_ROTATION_SPEED * 10,
               duration: 2,
               ease: "power2.out",
               onComplete: () => {
                 gsap.to(wheelPostionData, {
                   speed: 0,
-                  duration: 2,
+                  duration: 3,
                   ease: "power3.in",
                   onComplete: () => {
                     const wheelLocation =
@@ -105,8 +105,7 @@ export const initCanvas = async (ref: HTMLElement) => {
                       angle:
                         baselineBallTopPos +
                         wheelLocation -
-                        getNumberAngle(gameStore.currentNumber!) +
-                        0.005,
+                        getNumberAngle(gameStore.currentNumber!) + 0.005,
                       x: ballPositionData.x * 0.7,
                       y: ballPositionData.y * 0.7,
                       duration: 6,
@@ -130,6 +129,7 @@ export const initCanvas = async (ref: HTMLElement) => {
         ballSprite.alpha = 0;
 
         ballPositionData.angle = Math.PI * 1.5;
+        ballPositionData.velocity = 0;
         ballPositionData.x = 204;
         ballPositionData.y = 147;
 
