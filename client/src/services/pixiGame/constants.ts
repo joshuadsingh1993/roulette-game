@@ -1,4 +1,4 @@
-export const DEFAULT_WHEEL_ROTATION_SPEED = 0.01;
+export const DEFAULT_WHEEL_ROTATION_SPEED = 0.005;
 
 export const ROULETTE_NUMBERS = [
   { value: 0, color: "green" },
